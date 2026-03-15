@@ -19,6 +19,16 @@ The objective of this project is to build a scalable analytics and ML workflow f
 - support time-series trend analysis
 - surface insights through an executive-style Power BI dashboard
 
+## Data Access
+
+Raw CMS Medicare source files are not stored in this repository due to file size.
+
+Official source links:
+- `https://data.cms.gov/`
+- `https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data`
+
+This project uses CMS Medicare public use data as the Bronze-layer source for downstream Databricks, dbt, SageMaker, and Power BI workflows.
+
 ## Architecture
 
 ### End-to-End Flow
