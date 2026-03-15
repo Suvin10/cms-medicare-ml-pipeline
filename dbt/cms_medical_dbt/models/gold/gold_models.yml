@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: gold_regression_features
+    description: "Feature table for regression modeling to predict average Medicare payment."
+    columns:
+      - name: reporting_year
+        tests:
+          - not_null
+
+      - name: provider_state
+        tests:
+          - not_null
+
+      - name: provider_type
+        tests:
+          - not_null
+
+      - name: place_of_service
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["F", "O"]
+              config:
+                severity: warn
+
+      - name: target_avg_payment_amt
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+  - name: gold_state_year_payment_trend
+    description: "State-year time series table for forecasting Medicare payment trends."
+    columns:
+      - name: reporting_year
+        tests:
+          - not_null
+
+      - name: provider_state
+        tests:
+          - not_null
+
+      - name: avg_payment_amt
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true

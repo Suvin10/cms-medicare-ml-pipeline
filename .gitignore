@@ -1,0 +1,28 @@
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+venv_cms_project/
+
+# env files
+.env
+
+# OS
+.DS_Store
+
+# project data / artifacts
+data_raw/
+exports/
+powerbi/*.pbix
+*.csv
+*.parquet
+*.pkl
+*.joblib
+*.model
+.ipynb_checkpoints/

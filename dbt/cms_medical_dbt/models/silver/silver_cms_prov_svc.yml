@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: silver_cms_prov_svc
+    description: "Cleaned CMS Provider-Service dataset for analytics and ML feature engineering."
+
+    tests:
+      # model-level test: provider_state should be 2 chars when present
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "provider_state is null or length(provider_state) = 2"
+          config:
+            severity: warn
+
+    columns:
+      - name: rendering_npi
+        tests:
+          - not_null
+
+      - name: hcpcs_code
+        tests:
+          - not_null
+
+      - name: provider_state
+        tests:
+          - not_null
+
+      - name: total_beneficiaries
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+      - name: total_services
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+      - name: avg_submitted_charge
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+      - name: avg_medicare_allowed_amt
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+      - name: avg_medicare_payment_amt
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+      - name: place_of_service
+        tests:
+          - accepted_values:
+              values: ["F", "O"]
+              config:
+                severity: warn

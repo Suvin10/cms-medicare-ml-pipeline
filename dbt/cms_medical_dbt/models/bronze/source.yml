@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: cms_bronze
+    database: cms_medical_data
+    schema: bronze
+    tables:
+      - name: cms_prov_svc_raw
+        description: "CMS Medicare Physician & Other Practitioners – by Provider and Service (PUF), raw ingested table."
