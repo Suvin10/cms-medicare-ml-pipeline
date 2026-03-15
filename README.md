@@ -38,6 +38,10 @@ The objective of this project is to build a scalable analytics and ML workflow f
    - actual vs predicted performance
    - model error metrics
 
+   ## Architecture Diagram
+
+![Architecture Diagram](architecture/architecture_diagram.png)
+
 ## Tech Stack
 
 - **Databricks** for lakehouse storage and transformation
