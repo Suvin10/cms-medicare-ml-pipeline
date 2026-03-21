@@ -11,7 +11,7 @@ The pipeline ingests CMS Medicare public use data into Databricks, transforms it
 
 ## Results Snapshot
 
-- Built Databricks Bronze → Silver → Gold analytical models using dbt
+- Built Databricks Bronze → Silver → Gold analytical models with dbt transformations, tests, and schema control
 - Created Gold tables for regression features, state-year payment trends, and prediction outputs
 - Trained AWS SageMaker regression and time-series models
 - Generated batch predictions and loaded them back into Databricks for BI consumption
@@ -54,7 +54,7 @@ In this project, I designed and implemented:
 1. CMS Medicare public use data ingested into Databricks Bronze layer  
 2. Bronze data cleaned and standardized into Silver layer  
 3. dbt transforms Silver tables into Gold analytics-ready models  
-4. Gold features exported and stored for machine learning workflows  
+4. Gold feature tables exported to S3 for SageMaker training and inference workflows  
 5. AWS SageMaker trains:
    - a regression model for average payment prediction
    - a time-series model for trend analysis  
@@ -80,13 +80,13 @@ In this project, I designed and implemented:
 ## Data Model
 
 ### Bronze
-Raw CMS Medicare provider and service data ingested into Databricks.
+Raw CMS Medicare provider and service data ingested into Databricks with reporting_year appended for multi-year analysis.
 
 ### Silver
 Cleaned, standardized, and validated provider-service level dataset.
 
 ### Gold
-Business-ready tables used for reporting and machine learning:
+Business-ready aggregated tables used for reporting and machine learning:
 
 - `gold_regression_features`
 - `gold_state_year_payment_trend`
@@ -184,6 +184,8 @@ These metrics help assess:
 - relative percentage error
 - whether predictions systematically overpredict or underpredict
 
+Detailed training and evaluation metric values are documented in [`docs/model_metrics.md`](docs/model_metrics.md).
+
 ## Data Access
 
 Raw CMS Medicare source data is not stored in this repository due to file size and repository hygiene.
@@ -199,6 +201,7 @@ This project uses publicly available CMS Medicare data as the Bronze-layer sourc
 ```text
 cms-medicare-ml-pipeline/
 ├── README.md
+├── .gitignore
 ├── architecture/
 │   └── architecture_diagram.png
 ├── dashboard/
@@ -207,20 +210,73 @@ cms-medicare-ml-pipeline/
 │       ├── page2_state_year_trends.png
 │       ├── page3_detailed_drilldown.png
 │       └── page4_ml_prediction_performance.png
+├── databricks/
+│   ├── README.md
+│   ├── bronze_ingestion.sql
+│   ├── create_gold_regression_predictions.sql
+│   └── validation_queries.sql
 ├── dbt/
 │   └── cms_medical_dbt/
 │       ├── dbt_project.yml
-│       ├── models/
-│       │   ├── bronze/
-│       │   ├── silver/
-│       │   └── gold/
+│       ├── packages.yml
 │       ├── macros/
-│       ├── tests/
-│       └── packages.yml
+│       │   └── generate_schema_name.sql
+│       └── models/
+│           ├── bronze/
+│           │   └── source.yml
+│           ├── silver/
+│           │   ├── silver_cms_prov_svc.sql
+│           │   └── silver_cms_prov_svc.yml
+│           └── gold/
+│               ├── gold_regression_features.sql
+│               ├── gold_state_year_payment_trend.sql
+│               └── gold_models.yml
 ├── docs/
+│   ├── architecture_decisions.md
 │   ├── data_dictionary.md
-│   └── model_metrics.md
+│   ├── model_metrics.md
+│   └── runbook.md
 ├── powerbi/
 │   └── dashboard_notes.md
-├── sagemaker/
-│   └── README.md
+└── sagemaker/
+    ├── README.md
+    ├── train_regression.py
+    ├── train_timeseries.py
+    └── batch_inference.py
+
+
+## How to Use
+
+This repository is intended as a portfolio and architecture showcase.  
+A typical workflow would be:
+
+1. load CMS source data into Databricks Bronze
+2. run dbt models to build Silver and Gold layers
+3. export or prepare Gold features for SageMaker
+4. train regression and time-series models
+5. generate batch predictions
+6. load prediction outputs back into Databricks Gold
+7. connect Power BI to Databricks Gold tables and refresh the dashboard
+
+## Lessons Learned
+
+This project helped reinforce several important data and ML engineering concepts:
+
+- how to design Bronze, Silver, and Gold layers so the same platform supports analytics and machine learning
+- how to structure Gold tables for Power BI consumption instead of relying on raw files
+- how to separate reusable business metrics into clean DAX measures
+- how row-level error metrics and aggregate-level KPIs tell different stories in ML evaluation
+- how chart choice, layout, and slicer design strongly affect dashboard readability
+
+## Future Improvements
+
+- automate orchestration with Airflow or AWS Step Functions
+- add CI/CD for dbt and ML workflows
+- implement model registry and monitoring
+- publish the Power BI dashboard to Power BI Service
+- add experiment tracking and richer forecasting evaluation
+- expand reproducibility and deployment documentation
+
+## Author
+
+**Suvin**
